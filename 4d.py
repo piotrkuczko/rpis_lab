@@ -71,6 +71,7 @@ def tryrandom():
         k+=1
     return 0
 
+
 N = 100000
 ok = 0
 

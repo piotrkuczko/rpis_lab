@@ -65,6 +65,7 @@ def tryrandom():
 N = 100000
 ok = 0
 
+
 solutions = []
 for i in range(N):
     ok += tryrandom()

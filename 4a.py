@@ -9,6 +9,7 @@ def odl(a, b):
 W = 10
 P = W*W*4
 
+
 def inside(p):
     global W
     a, b = p
