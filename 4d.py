@@ -46,16 +46,16 @@ def abs(x):
     return max(x, -x)
 
 
-ktora_spelnia = []
+first_satisfies_clauses = []
 for i in phi:
-    ktora_spelnia.append(0);
+    first_satisfies_clauses.append(0);
 
 
 def tryrandom():
     global M
     global phi
     sol = np.random.randint(0, 2, M)
-    kt = 0
+    k = 0
     for i in phi:
         ok = 1
         for j in i:
@@ -66,9 +66,9 @@ def tryrandom():
                 ok = 0
                 break
         if ok == 1:
-            ktora_spelnia[kt]+=1
+            first_satisfies_clauses[k]+=1
             return 1
-        kt+=1
+        k+=1
     return 0
 
 N = 100000
@@ -82,39 +82,29 @@ for i in range(N):
 
 
 def assignments_satisfy_clause():
-    output1 = []
+    output = []
     for i in phi:
-        insert_val = 0
-        ready_val = 0
+        ready = 0
         for j in i:
             if (-j) in i:
-                ready_val = 1
-                insert_val = 0
+                ready = 1
                 break
-        if ready_val == 1:
-            output1.append(insert_val)
+        if ready == 1:
+            output.append(0)
         else:
-            output1.append(round(pow(2.0, M-len(i))))
-    return output1
+            output.append(round(pow(2.0, M-len(i))))
+    return output
 
 print (assignments_satisfy_clause())
 
 
-
-#print(round(ok / N * pow(2.0, M)))
-pierwsza_klauzula = []
-
 summary = 0
-prawdopodobienstwo = []
+probability = []
 for i in range(len(phi)):
-    prawdopodobienstwo.append(ktora_spelnia[i]/N)
-    pierwsza_klauzula.append(round(prawdopodobienstwo[i]*pow(2.0, M)))
-    summary += pierwsza_klauzula[i]
+    probability.append(first_satisfies_clauses[i]/N)
+    first_satisfies_clauses[i] = (round(probability[i]*pow(2.0, M)))
+    summary += first_satisfies_clauses[i]
 
-print(prawdopodobienstwo)
-print(pierwsza_klauzula)
+print(probability)
+print(first_satisfies_clauses)
 print(summary)
-# print(solutions[N-1])
-# plot.ylim([1.01e18,1.25e18])
-# plot.plot(range(N), solutions)
-# plot.show()
