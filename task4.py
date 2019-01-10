@@ -88,7 +88,7 @@ for i in range(len(phi)):
     summary += pierwsza_klauzula[i]
 
 print(prawdopodobienstwo)
-print(ktora_spelnia)
+print(pierwsza_klauzula)
 print(summary)
 # print(solutions[N-1])
 # plot.ylim([1.01e18,1.25e18])
