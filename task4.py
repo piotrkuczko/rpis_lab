@@ -77,15 +77,19 @@ for i in range(N):
     ok += tryrandom()
     solutions += [pow(2.0, M) * ok / (i + 1)]
 
-print(ok / N * pow(2.0, M))
+print(round(ok / N * pow(2.0, M)))
+pierwsza_klauzula = []
 
+summary = 0
 prawdopodobienstwo = []
 for i in range(len(phi)):
     prawdopodobienstwo.append(ktora_spelnia[i]/N)
-    ktora_spelnia[i]=prawdopodobienstwo[i]*pow(2.0, M)
+    pierwsza_klauzula.append(round(prawdopodobienstwo[i]*pow(2.0, M)))
+    summary += pierwsza_klauzula[i]
 
 print(prawdopodobienstwo)
 print(ktora_spelnia)
+print(summary)
 # print(solutions[N-1])
 # plot.ylim([1.01e18,1.25e18])
 # plot.plot(range(N), solutions)
