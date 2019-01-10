@@ -39,6 +39,8 @@ phi = [[55, 3, -50, -57, 2, 51, -5, -56, -45, 1], [28, -1, -26, 35, 42, -43, 45,
        [-59, -58, -30, -46, 17, 11, 3, -18, -1, -50], [-61, -52, 17, -4, -44, -56, 64, 37, -47, 46],
        [28, 59, -23, 29, -5, -41, 39, 57, 2, 34], [-54, 56, 5, -20, -6, 13, 49, 28, -42, 25]]
 
+for i in range(len(phi)):
+    phi[i] = set(phi[i])
 
 def abs(x):
     return max(x, -x)
@@ -77,7 +79,29 @@ for i in range(N):
     ok += tryrandom()
     solutions += [pow(2.0, M) * ok / (i + 1)]
 
-print(round(ok / N * pow(2.0, M)))
+
+
+def assignments_satisfy_clause():
+    output1 = []
+    for i in phi:
+        insert_val = 0
+        ready_val = 0
+        for j in i:
+            if (-j) in i:
+                ready_val = 1
+                insert_val = 0
+                break
+        if ready_val == 1:
+            output1.append(insert_val)
+        else:
+            output1.append(round(pow(2.0, M-len(i))))
+    return output1
+
+print (assignments_satisfy_clause())
+
+
+
+#print(round(ok / N * pow(2.0, M)))
 pierwsza_klauzula = []
 
 summary = 0
