@@ -82,8 +82,10 @@ print(ok / N * pow(2.0, M))
 prawdopodobienstwo = []
 for i in range(len(phi)):
     prawdopodobienstwo.append(ktora_spelnia[i]/N)
+    ktora_spelnia[i]=prawdopodobienstwo[i]*pow(2.0, M)
 
 print(prawdopodobienstwo)
+print(ktora_spelnia)
 # print(solutions[N-1])
 # plot.ylim([1.01e18,1.25e18])
 # plot.plot(range(N), solutions)
