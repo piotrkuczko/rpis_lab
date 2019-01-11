@@ -102,14 +102,14 @@ def first_satisfies_clauses():
     return first_satisfies_clauses_arr
 
 N = len(phi) * R
-first_satisfies_clauses_arr = first_satisfies_clauses()
+first_satisfies_clauses = first_satisfies_clauses()
 first_sat_cla = []
 probability = []
 summary = 0
-for i in range(len(first_satisfies_clauses_arr)):
-    probability.append(first_satisfies_clauses_arr[i]/R)
+for i in range(len(first_satisfies_clauses)):
+    probability.append(first_satisfies_clauses[i]/R)
 
-for i in range(len(first_satisfies_clauses_arr)):
+for i in range(len(first_satisfies_clauses)):
     first_sat_cla.append(probability[i]*assignments_satisfy_clause[i])
     summary += first_sat_cla[i]
 print(probability)
