@@ -46,42 +46,6 @@ def abs(x):
     return max(x, -x)
 
 
-first_satisfies_clauses = []
-for i in phi:
-    first_satisfies_clauses.append(0);
-
-
-def tryrandom():
-    global M
-    global phi
-    sol = np.random.randint(0, 2, M)
-    k = 0
-    for i in phi:
-        ok = 1
-        for j in i:
-            if j < 0 and sol[-j - 1] == 1:
-                ok = 0
-                break
-            if j > 0 and sol[j - 1] == 0:
-                ok = 0
-                break
-        if ok == 1:
-            first_satisfies_clauses[k]+=1
-            return 1
-        k+=1
-    return 0
-
-
-N = 100000
-ok = 0
-
-solutions = []
-for i in range(N):
-    ok += tryrandom()
-    solutions += [pow(2.0, M) * ok / (i + 1)]
-
-
-
 def assignments_satisfy_clause():
     output = []
     for i in phi:
@@ -96,16 +60,58 @@ def assignments_satisfy_clause():
             output.append(round(pow(2.0, M-len(i))))
     return output
 
-print (assignments_satisfy_clause())
+assignments_satisfy_clause = assignments_satisfy_clause()
+print (assignments_satisfy_clause)
 
+def check_assigment(sol):
+    global M
+    global phi
+    k = 0
+    for i in phi:
+        ok = 1
+        for j in i:
+            if j < 0 and sol[-j - 1] == 1:
+                ok = 0
+                break
+            if j > 0 and sol[j - 1] == 0:
+                ok = 0
+                break
+        if ok == 1:
+            return (1, k)
+        k+=1
+    return (0, 0)
 
-summary = 0
+R = 1000
+def first_satisfies_clauses():
+    global phi
+    first_satisfies_clauses_arr = []
+    for i in phi:
+        first_satisfies_clauses_arr.append(0)
+    for i in range(len(phi)):
+        for k in range (R):
+            sol = np.random.randint(0, 2, M)
+            for j in phi[i]:
+                if j > 0:
+                    sol[j-1] = 1
+                if j < 0:
+                    sol[abs(j)-1] = 0
+            out = check_assigment(sol)
+            #print (out)
+            if out[1] == i:
+                first_satisfies_clauses_arr[i]+=1
+    return first_satisfies_clauses_arr
+
+N = len(phi) * R
+first_satisfies_clauses_arr = first_satisfies_clauses()
+first_sat_cla = []
 probability = []
-for i in range(len(phi)):
-    probability.append(first_satisfies_clauses[i]/N)
-    first_satisfies_clauses[i] = (round(probability[i]*pow(2.0, M)))
-    summary += first_satisfies_clauses[i]
+summary = 0
+for i in range(len(first_satisfies_clauses_arr)):
+    probability.append(first_satisfies_clauses_arr[i]/R)
 
+for i in range(len(first_satisfies_clauses_arr)):
+    first_sat_cla.append(probability[i]*assignments_satisfy_clause[i])
+    summary += first_sat_cla[i]
 print(probability)
-print(first_satisfies_clauses)
+print(first_sat_cla)
 print(summary)
