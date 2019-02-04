@@ -1,4 +1,3 @@
-# liczymy sobie średnią i przerzucamy kubki do średniej, potem losujemy dzień i mamy dwa dni do wyboru
 import random
 
 import numpy as np
@@ -8,8 +7,8 @@ from statistics import median
 from statistics import mean
 from collections import Counter
 
-from scipy import stats
-
+input = np.loadtxt('us_births_69_88.csv', skiprows=1, delimiter=',', dtype=int)
+inputNotebook = input
 
 def correctDate (day, month):
     isValidDate = True
@@ -19,100 +18,86 @@ def correctDate (day, month):
         isValidDate = False
     return isValidDate
 
+# input 0 - month, 1 - day
 
-tab = np.loadtxt('dane.txt', skiprows=1, delimiter=',', dtype=int)
-tablist_correctDate = list()
-tablist_unCorrectDate = list()
-for i in range (len(tab)):
-    if (correctDate(tab[i][1], tab[i][0]) == True):
-        tablist_correctDate.append (tab[i][2])
-    tablist_unCorrectDate.append(tab[i][2])
+births = []
+maks = 0
+for date in input:
+	# if correctDate(date[1], date[0]):
+	births.append(date[2])
+	maks = max(date[2], maks)
 
-input_correctDate = (np.asarray(tablist_correctDate)) * len(tablist_correctDate)
-input_unCorrectDate = (np.asarray(tablist_unCorrectDate)) * len(tablist_unCorrectDate)
+input = np.asarray(births)
+births = input
+births = births * births.size
 
+average = np.average(births)
+t = np.zeros((3, input.size))
 
-#print (srednia/len(tablist_correctDate))
+lower = []
+higher = []
+cnt = 0
+i = 0
+for birth in births:
+	if birth == average:
+		t[0][cnt] = t[1][cnt] = i
+		t[2][cnt] = average
+		cnt += 1
+	elif birth < average:
+		lower.append((i, birth))
+	else:
+		higher.append((i, birth))
+	i += 1
 
-#przelewanie kubelkow
+while len(lower) > 0 and len(higher) > 0:
+	l = lower.pop()
+	h = higher.pop()
+	
+	t[0][cnt] = l[0]
+	t[1][cnt] = h[0]
+	t[2][cnt] = l[1]
+	cnt += 1
 
+	h = (h[0], h[1] - average + l[1])
+	if h[1] == average:
+		t[0][cnt] = t[1][cnt] = h[0]
+		t[2][cnt] = h[1]
+		cnt += 1
+	elif h[1] < average:
+		lower.append(h)
+	else:
+		higher.append(h)
 
-def input_to_random_days (input):
-    srednia = (int)(np.average(input))
-    wyniki = np.zeros((3, input.size))
-    nis = list()
-    wys = list()
-    k = 0
-    for i in range(input.size):
-        if input[i] == srednia:
-            wyniki[0][k] = wyniki[2][k] = (int)(i)
-            wyniki[1][k] = (int)(srednia)
-            k += 1
-        elif input[i] > srednia:
-            wys.append((i, input[i]))
-        else:
-            nis.append((i, input[i]))
-    
-    while len(nis) > 0 and len(wys) > 0:
-        n = nis.pop()
-        w = wys.pop()
-        wyniki[0][k]=(int)(n[0])
-        wyniki[1][k] = (int)(n[1])
-        wyniki[2][k] = (int)(w[0])
-        k += 1
-        w = (w[0], (w[1]-srednia+n[1]))
-        if w[1] == srednia:
-            wyniki[0][k] = wyniki[2][k] = (int)(w[0])
-            wyniki[1][k] = (int)(srednia)
-            k += 1
-        elif w[1] > srednia:
-            wys.append(w)
-        else:
-            nis.append(w)
-    ileDni = 100000
-    ilelos = ileDni * 100
-    wysokosc = np.random.randint(0, srednia, ilelos)
-    dni = np.random.randint(0, input.size, ilelos)
-    randomDays = np.where(wysokosc > wyniki[1][dni], wyniki[2][dni], wyniki[0][dni])
-    return randomDays
-        
+N = 100000
+randomDays = np.random.randint(0, input.size, N)
+randomForDays = np.random.randint(0, average, np.size(randomDays))
 
-# for i in range (k):
-#     print (wyniki[0][i], wyniki[1][i], wyniki[2][i])
+resultDays = np.where(randomForDays > t[2][randomDays], t[1][randomDays], t[0][randomDays])
 
-#zwektoryzowane losowanie
-randomDaysCorrect = input_to_random_days(input_correctDate)
-randomDaysUncorrect = input_to_random_days(input_unCorrectDate)
+c = np.bincount(resultDays.astype(int))
+cGood = [i for i in c if i > 10]
 
-#-----------------------------------------------------------------------------------------------
+sum = np.sum(births)
+sumGood = np.sum([i for i in births if i > 100000])
 
-def wyznaczS (input, randomDays):
-    N = 10000
-    p = []
-    f = []
-    sum = 0
-    for i in input:
-        sum += int(i)
-    for i in input:
-        p.append(i / sum)
-    for i in p:
-        f.append(i*N)
-    days = []
-    d = int(max(randomDays))
-    print (d)
-    for i in range(d+1):
-        days.append(0)
-    for i in range(N):
-        days[int(randomDays[i])] += 1
-    S = 0
-    for i in range(len(f)):
-        S += ((f[i] - days[i]) ** 2) / f[i]
-    return S
+p = births / sum
+pGood = [i for i in births if i > 100000]
+pGood = pGood / sumGood
 
-S_correct = wyznaczS(input_correctDate, randomDaysCorrect)
-S_uncorrect = wyznaczS(input_unCorrectDate, randomDaysUncorrect)
-print(S_correct)
-print (S_uncorrect)
+f = p * N
+fGood = pGood * N
 
-print(1-stats.chi2.cdf(S_correct, len(input_correctDate)-1))
-print(1-stats.chi2.cdf(S_uncorrect, len(input_unCorrectDate)-1))
+s = 0
+for i in range(len(f)):
+	s += ((f[i] - c[i]) ** 2) / f[i]
+
+sGood = 0
+for i in range(len(fGood)):
+	sGood += ((fGood[i] - cGood[i]) ** 2) / fGood[i]
+
+from scipy.stats import chi2, chisquare
+
+print(s, sGood)
+print(1 - chi2.cdf(x=s, df=371), 1 - chi2.cdf(x=sGood, df=365))
+print(chisquare(c, f))
+print(chisquare(cGood, fGood))
